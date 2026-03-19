@@ -1,32 +1,56 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prashank's Portfolio</title>
+  <title>Netflix Clone</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <h1>Prashank's Portfolio</h1>
-    <h2>I am a Web Developer</h2>
 
-    <hr>
+<div id="login-page" class="login-page">
+  <div class="login-box">
+    <h1>NETFLIX</h1>
+    <input type="text" id="username" placeholder="Username">
+    <button onclick="login()">Sign In</button>
+  </div>
+</div>
 
-    <h3>
-        <a href="./public/movie-ranking.html">Movie Ranking Project</a>
-    </h3>
-    <img src="./assets/images/movie-ranking.png" height="200" alt="Movie ranking Project">
 
-    <h3>
-        <a href="./public/birthday-invite.html">Birthday Invite Project</a>
-    </h3>
-    <img src="./assets/images/birthday-invite.png" height="200" alt="Birthday invite Project">
+<div id="app">
 
-    <hr>
+  <div class="navbar">
+    <h2 class="logo">NETFLIX</h2>
 
-    <a href="./public/about.html">About Me</a>
-    <br>
-    <a href="./public/contact.html">Contact Me</a>
+    <div class="search-box">
+      <input type="text" id="search" placeholder="Search movies...">
+      <div id="search-dropdown"></div>
+    </div>
 
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <div class="banner">
+    <div class="banner-content">
+      <h1>Unlimited Movies, Shows & More</h1>
+      <p>Watch anywhere. Cancel anytime.</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <h2>My List ⭐</h2>
+    <div id="my-list" class="row-posters"></div>
+  </div>
+
+  <div id="rows"></div>
+
+</div>
+
+
+<div id="popup" class="popup">
+  <span id="close">✖</span>
+  <iframe id="video" frameborder="0" allowfullscreen></iframe>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
