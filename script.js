@@ -1,116 +1,49 @@
-const API_KEY = "17bf2f8a2d734c7a6884a4960b345360";
+var backgrounds = document.querySelectorAll('.background');
 
-const base_url = "https://api.themoviedb.org/3";
-const img_url = "https://image.tmdb.org/t/p/w500";
+const slider = document.querySelector('.slider-images');
+const images = Array.from(slider.children);
 
-const rowsContainer = document.getElementById("rows");
-const searchInput = document.getElementById("search");
-const dropdown = document.getElementById("search-dropdown");
+let imageIndex = 0;
 
-function login() {
-  const username = document.getElementById("username").value;
-  if (!username) return alert("Enter username");
-  localStorage.setItem("user", username);
-  location.reload();
-}
+function updateSlider() {
+    images.forEach(image => {
+        image.classList.remove('active', 'previous', 'next', 'inactive');
+    });
 
-function logout() {
-  localStorage.clear();
-  location.reload();
-}
+    images[imageIndex].classList.add('active');
 
-if (!localStorage.getItem("user")) {
-  document.getElementById("app").style.display = "none";
-} else {
-  document.getElementById("login-page").style.display = "none";
-}
-
-
-searchInput.addEventListener("input", async () => {
-  const query = searchInput.value;
-
-  if (query.length < 2) {
-    dropdown.style.display = "none";
-    return;
-  }
-
-  const res = await fetch(`${base_url}/search/movie?api_key=${API_KEY}&query=${query}`);
-  const data = await res.json();
-
-  dropdown.innerHTML = data.results
-    .filter(m => m.poster_path)
-    .slice(0,5)
-    .map(movie => `
-      <div class="search-item" onclick="playTrailer(${movie.id})">
-        <img src="https://image.tmdb.org/t/p/w200${movie.poster_path}">
-        <span>${movie.title}</span>
-      </div>
-    `).join("");
-
-  dropdown.style.display = "block";
-});
-
-
-const requests = [
-  { title: "Trending", url: `/trending/movie/week?api_key=${API_KEY}` },
-  { title: "Hindi Movies", url: `/discover/movie?api_key=${API_KEY}&with_original_language=hi` },
-  { title: "Telugu Movies", url: `/discover/movie?api_key=${API_KEY}&with_original_language=te` }
-];
-
-async function loadRows() {
-  for (let req of requests) {
-    const res = await fetch(base_url + req.url);
-    const data = await res.json();
-
-    const row = document.createElement("div");
-
-    row.innerHTML = `
-      <h2>${req.title}</h2>
-      <div class="row-posters">
-        ${data.results.filter(m=>m.poster_path).map(movie => `
-          <img src="${img_url + movie.poster_path}" 
-               class="poster"
-               onclick="playTrailer(${movie.id})">
-        `).join("")}
-      </div>
-    `;
-
-    rowsContainer.appendChild(row);
-  }
-}
-
-loadRows();
-
-
-async function playTrailer(id) {
-  try {
-    let res = await fetch(`${base_url}/movie/${id}/videos?api_key=${API_KEY}`);
-    let data = await res.json();
-
-    let trailer = data.results.find(v => v.site === "YouTube");
-
-    if (!trailer) {
-      res = await fetch(`${base_url}/tv/${id}/videos?api_key=${API_KEY}`);
-      data = await res.json();
-      trailer = data.results.find(v => v.site === "YouTube");
-    }
-
-    if (trailer) {
-      document.getElementById("video").src =
-        `https://www.youtube.com/embed/${trailer.key}`;
-      document.getElementById("popup").style.display = "flex";
+    if (imageIndex - 1 >= 0) {
+        images[imageIndex - 1].classList.add('previous');
     } else {
-      alert("Trailer not available");
+        images[images.length - 1].classList.add('previous');
     }
 
-  } catch (e) {
-    console.log(e);
-    alert("Error loading trailer");
-  }
+    if (imageIndex + 1 < images.length) {
+        images[imageIndex + 1].classList.add('next');
+    } else {
+        images[0].classList.add('next');
+    }
+
+    images.forEach((image, index) => {
+        if (index !== imageIndex && index !== (imageIndex - 1 + images.length) % images.length && index !== (imageIndex + 1) % images.length) {
+            image.classList.add('inactive');
+        }
+    });
+
+    backgrounds.forEach((background) => {
+        background.style.opacity = 0;
+    });
+    if (images[imageIndex].classList.contains('active')) {
+        backgrounds[imageIndex].style.opacity = 1;
+    }
+    imageIndex = (imageIndex + 1) % images.length;
 }
+updateSlider();
 
+setInterval(updateSlider, 3000);
 
-document.getElementById("close").onclick = () => {
-  document.getElementById("popup").style.display = "none";
-  document.getElementById("video").src = "";
-};
+images[1].classList.add('next');
+images[2].classList.add('inactive');
+images[3].classList.add('inactive');
+images[4].classList.add('previous');
+images[0].classList.add('active');
